@@ -15,7 +15,7 @@ fi
 apt-get update -y
 apt install -y curl gettext build-essential autoconf libtool libpcre3-dev asciidoc xmlto libev-dev libudns-dev automake git
 
-ROOT=~/ss-libev
+ROOT=~/build-ss-libev
 sodiumVer=1.0.12
 mbedtlsVer=2.5.1
 rm -rf "$ROOT" >/dev/null 2>&1
@@ -63,7 +63,7 @@ apt install -y rng-tools
 systemctl start rng-tools
 systemctl enable rng-tools
 
-local configDir="/etc/shadowsocks-libev"
+configDir="/etc/shadowsocks-libev"
 mkdir "$configDir"
 cat<<EOF>"$configDir/config.json"
 {
