@@ -20,6 +20,8 @@ sodiumVer=1.0.12
 mbedtlsVer=2.5.1
 rm -rf "$ROOT" >/dev/null 2>&1
 mkdir -pv "$ROOT"
+outputdir="$ROOT"/output
+mkdir -pv "$outputdir"
 
 cd "$ROOT"
 
@@ -34,47 +36,54 @@ apt-get remove libsodium* -y
 apt purge libsodium* -y
 
 #compile libsodium
+echo "downloading libsodium..."
 curl  https://download.libsodium.org/libsodium/releases/libsodium-${sodiumVer}.tar.gz -O
 echo "extract libsodium..."
 tar xf libsodium-${sodiumVer}.tar.gz
 cd libsodium*
 ./configure --prefix=/usr && make
 make install
-ldconfig
+cp ./src/libsodium/.libs/libsodium.so.* "$outputdir"
+#ldconfig
 
 cd ..
 
 #compile mbedtls
+echo "downloading mbedtls..."
 curl  https://tls.mbed.org/download/mbedtls-${mbedtlsVer}-gpl.tgz -O
 echo "extract mbedtls..."
 tar xf mbedtls*tgz
 cd mbedtls*
 make SHARED=1 CFLAGS=-fPIC
 make install
-ldconfig
+cp ./library/lib* "$outputdir"
+#ldconfig
 
 cd ..
 
 cd shadowsocks-libev
 ./autogen.sh && ./configure && make
-make install
+cp ./src/ss-* "$outputdir"
+#make install
 
-apt install -y rng-tools
-systemctl start rng-tools
-systemctl enable rng-tools
+echo "All files generated are in $outputdir"
 
-configDir="/etc/shadowsocks-libev"
-mkdir "$configDir"
-cat<<EOF>"$configDir/config.json"
-{
-    "server":"0.0.0.0",
-    "server_port":8388,
-    "password":"8388",
-    "method":"chacha20",
-    "local_port":1080,
-    "timeout":60
-}
-EOF
+#apt install -y rng-tools
+#systemctl start rng-tools
+#systemctl enable rng-tools
+
+#configDir="/etc/shadowsocks-libev"
+#mkdir "$configDir"
+#cat<<EOF>"$configDir/config.json"
+#{
+#    "server":"0.0.0.0",
+#    "server_port":8388,
+#    "password":"8388",
+#    "method":"chacha20",
+##    "local_port":1080,
+#    "timeout":60
+#}
+#EOF
 
 
 
